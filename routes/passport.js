@@ -7,8 +7,8 @@ module.exports = function(app){
   app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
   var cbURL = 'http://localhost:5000/login/facebook/return';
   passport.use(new Strategy({
-      clientID: '751775091648147',
-      clientSecret: '2590eb6318d3f123ae1cc3fbe63dd972',
+      clientID: process.env.PASSPORT_CLIENT_ID,
+      clientSecret: process.env.PASSPORT_CLIENT_SECRET,
     	callbackURL: cbURL
   	},
   	function(accessToken, refreshToken, profile, cb) {
