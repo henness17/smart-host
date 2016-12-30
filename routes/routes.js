@@ -1,9 +1,8 @@
-// routes.js
-module.exports = (function() { 'use strict'; var routes = require('express').Router();
+module.exports = function(app){
+	// routes must include passport
+	require('./passport.js')(app);
 
-	routes.get('/', function (req, res) { 
-		res.send('Hello SmartHost!');
-	});
-	
-	return routes;
-})();
+	app.get('/', function(req, res){
+    	res.render('index', {user: req.user});
+  	});
+};
