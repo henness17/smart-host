@@ -5,7 +5,7 @@ module.exports = function(app){
   app.use(require('cookie-parser')());
   app.use(require('body-parser').urlencoded({ extended: true }));
   app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
-  var cbURL = 'http://localhost:5000/login/facebook/return';
+  var cbURL = 'https://smart-host.herokuapp.com/login/facebook/return';
   passport.use(new Strategy({
       clientID: process.env.PASSPORT_CLIENT_ID,
       clientSecret: process.env.PASSPORT_CLIENT_SECRET,
