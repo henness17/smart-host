@@ -1,0 +1,8 @@
+{
+  "name": "smart-host",
+  "description": "A data visualizer that helps a host create the right mood for the current attendees.",
+  "repository": "",
+  "logo": "",
+  "keywords": ["node", "express", "static"],
+  "image": ""
+}
