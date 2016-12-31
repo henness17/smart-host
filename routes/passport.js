@@ -31,10 +31,6 @@ module.exports = function(app){
   		cb(null, obj);
 	 });
 
-  app.get('/abc', function(req, res){
-      res.render('index', {user: req.user});
-  });
-
   app.get('/login/facebook',
     passport.authenticate('facebook'));
 

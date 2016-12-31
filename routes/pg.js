@@ -9,18 +9,22 @@ module.exports = function(app){
 	app.use(bodyParser.json());
 	app.use(bodyParser.urlencoded({ extended: false}));
 
-  app.post('/selectmusic', function(req, res){
+  app.post('/lightingpreference', loggedIn, function(req, res){
     pg.connect(connect, function(err, client, done){
       if(err){
         return console.error('error fetching', err);
       }
-      console.log(req.body.music);
-      console.log(req.body.music);
-      console.log(req.body.music);
-      console.log(req.body.music);
-      client.query('INSERT INTO public.users('+req.body.music+') VALUES(1)');
+      client.query('INSERT INTO public.users(fbid, lighting) VALUES('+req.user.id+','+req.body.lighting+')');
       done();
       res.redirect('/');
     });
   });
+
+  function loggedIn(req, res, next) {
+    if (req.user) {
+        next();
+    } else {
+        res.redirect('/login');
+    }
+  }
 };
