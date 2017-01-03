@@ -15,7 +15,7 @@ module.exports = function(app){
       if(err){
         return console.error('error fetching', err);
       }
-      client.query('INSERT INTO public.users(fbid, set) VALUES('+req.user.id+',TRUE)');
+      client.query("INSERT INTO public.scenes(sceneid, name) VALUES (2,'White Owl Bar')");
       done();
       res.redirect('/');
     });
@@ -32,11 +32,20 @@ module.exports = function(app){
 
   var GetUsers = function GetUsers(id){
       pg.connect(connect, function(err, client, done){
-      client.query('SELECT * FROM users WHERE fbid=$1', [id], function(err, result){
+      client.query('SELECT * FROM users', function(err, result){
         console.log(result.rows);
       });
     }); 
   };
   module.exports.GetUsers = GetUsers;
+  
+  var GetScenes = function GetScenes(callback){
+    pg.connect(connect, function(err, client, done){
+    client.query('SELECT * FROM scenes', function(err, result){
+        callback(result.rows);
+      });
+    }); 
+  };
+  module.exports.GetScenes = GetScenes;
 };
 

@@ -1,5 +1,10 @@
 <body>
 	<a href="/">Home</a> | <a href="/scenes">Scenes</a> | <a href="/preferences">Preferences</a><br>
-	- <a href="/scene?sceneName=Cathedral+Coffee">Cathedral Coffee</a><br>
-	- <a href="/scene?sceneName=White+Owl+Bar">White Owl Bar</a>
+	<ul>
+    	<% scenes.forEach(function(scene) { %>
+        	<li>
+        		<a href='/scene?id=<%=scene.sceneid%>'><%=scene.name%></a>
+        	</li>
+    	<% }); %>
+	</ul>
 </body>
