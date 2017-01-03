@@ -12,7 +12,7 @@ module.exports = function(app){
   });
 
   app.get('/hello', function(req, res){
-    res.render('hello', {user: req.user});
+    res.render('some', {user: req.user});
   });
 
 	app.get('/preferences', loggedIn, function(req, res){
