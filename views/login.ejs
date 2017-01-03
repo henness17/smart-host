@@ -1,6 +1,6 @@
 <body>
 	<% if (user) { %>
-		<a href="/">Home</a> | <a href="/scenes">Scenes</a> | <a href="/preferences">Preferences</a><br>
+		<% include partials/head %>
 		You're logged in as <%= user.id %>.<br><br>
 		<a href="/logout/facebook">Log out</a>
 	<% } else { %>

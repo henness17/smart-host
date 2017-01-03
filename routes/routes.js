@@ -11,6 +11,10 @@ module.exports = function(app){
     res.render('login', {user: req.user});
   });
 
+  app.get('/hello', function(req, res){
+    res.render('hello', {user: req.user});
+  });
+
 	app.get('/preferences', loggedIn, function(req, res){
     res.render('preferences', {user: req.user});
 	});
@@ -23,17 +27,18 @@ module.exports = function(app){
     }
  	});
 
+  app.get('/scene', loggedIn, function(req, res){
+    // When the scene loads, use id to grab scene default
+    pg.GetSceneDefaults(req.query.id, ContinueScene);
+    function ContinueScene(general, music, lighting){
+      res.render('scene', {req: req, general: general, music: music, lighting: lighting});
+    }
+  });
+  
   app.get('/login', function(req, res){
     res.render('login', {user: req.user});
   });
-
-  app.get('/scene', loggedIn, function(req, res){
-    // We have request which holds the id of our scene
-    // Use the id to make a db call
-    // Save the info we need in order to populate the sceen :)
-    res.render('scene', {req: req});
-  });
-
+  
   function loggedIn(req, res, next) {
    	if (req.user) {
        	next();

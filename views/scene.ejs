@@ -1,5 +1,23 @@
 <body>
-	<a href="/">Home</a> | <a href="/scenes">Scenes</a> | <a href="/preferences">Preferences</a><br>
-	<%= req.query.sceneName %><br>
+	<% include partials/head %>
+	General:<br>
+	<%= general[0].name %><br>
+	<%= general[0].sceneid %><br>
+	<%= general[0].owner_fbid %><br>
+	<%= general[0].set %><br>
+	<%= general[0].influence %><br>
+	<br>
+	Music:<br>
+	<%= music[0].coffee_morning %><br>
+	<%= music[0].coffee_noon %><br>
+	<%= music[0].coffee_night %><br>
+	<%= music[0].fbid %><br>
+	<%= music[0].scene_id %><br>
+	<br>
+	Lighting:<br>
+	<%= lighting[0].coffee_percent %><br>
+	<%= lighting[0].coffee_mood %><br>
+	<%= lighting[0].scene_id %><br>
+	<br>
 	Join
 </body>

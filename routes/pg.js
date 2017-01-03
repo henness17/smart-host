@@ -15,7 +15,8 @@ module.exports = function(app){
       if(err){
         return console.error('error fetching', err);
       }
-      client.query("INSERT INTO public.scenes(sceneid, name) VALUES (2,'White Owl Bar')");
+      client.query("INSERT INTO public.music(scene_id, coffee_morning) VALUES (1,ARRAY['country', 'rap', 'acoustic'])");
+      client.query("INSERT INTO public.lighting(scene_id, coffee_percent) VALUES (1,ARRAY[70, 90, 40])");
       done();
       res.redirect('/');
     });
@@ -31,7 +32,7 @@ module.exports = function(app){
   }
 
   var GetUsers = function GetUsers(id){
-      pg.connect(connect, function(err, client, done){
+    pg.connect(connect, function(err, client, done){
       client.query('SELECT * FROM users', function(err, result){
         console.log(result.rows);
       });
@@ -41,11 +42,28 @@ module.exports = function(app){
   
   var GetScenes = function GetScenes(callback){
     pg.connect(connect, function(err, client, done){
-    client.query('SELECT * FROM scenes', function(err, result){
+      client.query('SELECT * FROM scenes', function(err, result){
         callback(result.rows);
       });
     }); 
   };
   module.exports.GetScenes = GetScenes;
+
+  var GetSceneDefaults = function GetSceneDefaults(id, callback){
+    pg.connect(connect, function(err, client, done){
+      var general, music, lighting;
+      client.query('SELECT * FROM scenes WHERE sceneid=$1', [id], function(err, result){
+          general = result.rows;
+        }); 
+      client.query('SELECT * FROM music WHERE scene_id=$1', [id], function(err, result){
+          music = result.rows;
+        });
+      client.query('SELECT * FROM lighting WHERE scene_id=$1', [id], function(err, result){
+          lighting = result.rows;
+          callback(general, music, lighting);
+        });
+      }); 
+    };
+  module.exports.GetSceneDefaults = GetSceneDefaults;
 };
 
