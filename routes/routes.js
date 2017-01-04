@@ -11,8 +11,8 @@ module.exports = function(app){
     res.render('login', {user: req.user});
   });
 
-  app.get('/hello', function(req, res){
-    res.render('some', {user: req.user});
+  app.get('/profile', loggedIn, function(req, res){
+    res.render('profile', {user: req.user});
   });
 
 	app.get('/preferences', loggedIn, function(req, res){
@@ -31,7 +31,18 @@ module.exports = function(app){
     // When the scene loads, use id to grab scene default
     pg.GetSceneDefaults(req.query.id, ContinueScene);
     function ContinueScene(general, music, lighting){
-      res.render('scene', {req: req, general: general, music: music, lighting: lighting});
+      // Get the time of day
+      var date = new Date();
+      var currentHour = date.getHours();
+      var timeOfDay;
+      if(currentHour < 11){
+        timeOfDay = 0;
+      }else if(currentHour < 17){
+        timeOfDay = 1;
+      }else{
+        timeOfDay = 2;
+      }
+      res.render('scene', {req: req, timeOfDay: timeOfDay, general: general, music: music, lighting: lighting});
     }
   });
   
@@ -39,6 +50,11 @@ module.exports = function(app){
     res.render('login', {user: req.user});
   });
   
+  app.post('/join-scene', function(req, res){
+    // If the user requests to join the room, send the fbid and scene id to pg.JoinScene
+    pg.JoinScene(req.user.id, req.query.id);
+  });
+
   function loggedIn(req, res, next) {
    	if (req.user) {
        	next();

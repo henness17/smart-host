@@ -1,23 +1,18 @@
 <body>
 	<% include partials/head %>
-	General:<br>
-	<%= general[0].name %><br>
-	<%= general[0].sceneid %><br>
-	<%= general[0].owner_fbid %><br>
-	<%= general[0].set %><br>
-	<%= general[0].influence %><br>
-	<br>
-	Music:<br>
-	<%= music[0].coffee_morning %><br>
-	<%= music[0].coffee_noon %><br>
-	<%= music[0].coffee_night %><br>
-	<%= music[0].fbid %><br>
-	<%= music[0].scene_id %><br>
-	<br>
-	Lighting:<br>
-	<%= lighting[0].coffee_percent %><br>
-	<%= lighting[0].coffee_mood %><br>
-	<%= lighting[0].scene_id %><br>
-	<br>
-	Join
+	<h1><%= general[0].name %></h1>
+	<% if(timeOfDay == 0){ %>
+		<p>Good morning!</p>
+	<% }else if(timeOfDay == 1){ %>
+		<p>Good afternoon!<p>
+	<% }else{ %>
+		<p>Good evening!<p>
+	<% } %>
+	<p>At this time of day we play <%= music[0].genre[0][timeOfDay] %> music most of the time.<p>
+	<p>Right now our lighting is usually set to <%= lighting[0].mood[0][timeOfDay] %> at <%= lighting[0].percent[0][timeOfDay] %> percent.</p>
+
+	<p>Would you like to become apart of our scene?</p>
+	<form action="/join-scene" method="post">
+    	<button>Join Scene</button>    
+	</form>
 </body>
