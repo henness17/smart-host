@@ -23,23 +23,23 @@ module.exports = function(app){
     pg.end();
   });
 
-  var JoinScene = function JoinScene(fbid, sceneid){
+  var JoinScene = function JoinScene(fbid, sceneid, callback){
     pg.connect(connect, function(err, client, done){
       if(err){
         return console.error('error fetching', err);
       }
-      var beforeUsersFbids;
-      var updatedUsersFbids; // When the new user is added
-      client.query("SELECT * FROM public.scenes WHERE sceneid=$1", [sceneid], function(err, result){
-          beforeUsersFbids = result.rows[0].users_fbids;
-          console.log(beforeUsersFbids);
+      var usersFbids;
+      client.query("SELECT * FROM scenes WHERE sceneid=$1", [sceneid], function(err, result){
+        usersFbids = result.rows[0].usersfbids;
+        console.log("PG users: " + usersFbids);
+        usersFbids.push(fbid);
+        client.query("UPDATE public.scenes SET usersfbids=$2 WHERE sceneid=$1", [sceneid, usersFbids]);
+        done();
+        callback();
       });
-      /*beforeUsersFbids.forEach(function(user) {
-        updatedUsersFbids.push(user);
-      });
-      updatedUsersFbids.push(fbid);
-      client.query("UPDATE public.scenes WHERE sceneid=$1 SET users_fbids=$2", [sceneid, updatedUsersFbids]);*/
-      done();
+      // User may need a InRoom column that keeps track of what room they're in
+      // When JoinScene is called, the user can be removed from their current room (if any)
+      // This will make for easier lookup when removing the user from the Scenes userFbids column
     });
     pg.end();
   };
@@ -69,10 +69,10 @@ module.exports = function(app){
       client.query('SELECT * FROM scenes WHERE sceneid=$1', [id], function(err, result){
           general = result.rows;
         }); 
-      client.query('SELECT * FROM music WHERE scene_id=$1', [id], function(err, result){
+      client.query('SELECT * FROM music WHERE sceneid=$1', [id], function(err, result){
           music = result.rows;
         });
-      client.query('SELECT * FROM lighting WHERE scene_id=$1', [id], function(err, result){
+      client.query('SELECT * FROM lighting WHERE sceneid=$1', [id], function(err, result){
           lighting = result.rows;
           callback(general, music, lighting);
         });

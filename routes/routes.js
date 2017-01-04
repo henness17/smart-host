@@ -42,7 +42,11 @@ module.exports = function(app){
       }else{
         timeOfDay = 2;
       }
-      res.render('scene', {req: req, timeOfDay: timeOfDay, general: general, music: music, lighting: lighting});
+      var sceneType;
+      if(general[0].type == "coffee"){
+        sceneType = 0;
+      }
+      res.render('scene', {req: req, sceneid: req.query.id, sceneType: sceneType, timeOfDay: timeOfDay, general: general, music: music, lighting: lighting});
     }
   });
   
@@ -52,7 +56,10 @@ module.exports = function(app){
   
   app.post('/join-scene', function(req, res){
     // If the user requests to join the room, send the fbid and scene id to pg.JoinScene
-    pg.JoinScene(req.user.id, req.query.id);
+    pg.JoinScene(req.user.id, req.query.id, ContinueJoinScene);
+    function ContinueJoinScene(){
+      res.redirect('/');;
+    }
   });
 
   function loggedIn(req, res, next) {
