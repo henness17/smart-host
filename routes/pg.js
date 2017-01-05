@@ -60,6 +60,19 @@ module.exports = function(app){
 
   var LeaveScene = function LeaveScene(fbid, callback){
     pg.connect(connect, function(err, client, done){
+      client.query("SELECT * FROM public.users WHERE fbid=$1", [fbid], function(err, result){
+        if(result.rows[0].inscene != undefined){
+          // Remove from old scene's usersfbids
+          client.query("SELECT * FROM public.scenes WHERE sceneid=$1", [result.rows[0].inscene], function(err, result2){
+            var usersFbids = result2.rows[0].usersfbids;
+            var indexOfUser = usersFbids.indexOf(fbid);
+            if (indexOfUser > -1) {
+              usersFbids.splice(indexOfUser, 1);
+            }
+            client.query("UPDATE public.scenes SET usersfbids=$1 WHERE sceneid=$2", [usersFbids, result.rows[0].inscene]);
+          });
+        }
+      });
       client.query('UPDATE public.users SET inscene=null WHERE fbid=$1', [fbid], function(err, result){
         callback();
       });
