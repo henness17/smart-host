@@ -7,14 +7,14 @@ module.exports = function(app){
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: false}));
 
-	app.get('/', loggedIn, function(req, res){
+	app.get('/', loggedIn, AddCheckSet, function(req, res){
     pg.AddCheckRegistration(req.user.id, ContinueIndex);
     function ContinueIndex(){
       res.render('login', {user: req.user});
     }
   });
 
-  app.post('/join-scene', function(req, res){
+  app.post('/join-scene', loggedIn, function(req, res){
     // If the user requests to join the room, send the fbid and scene id to pg.JoinScene
     pg.JoinScene(req.user.id, req.query.id, ContinueJoinScene);
     function ContinueJoinScene(){
@@ -66,7 +66,7 @@ module.exports = function(app){
     }
   });
 
-	app.get('/scenes', loggedIn, function(req, res){
+	app.get('/scenes', loggedIn, AddCheckSet, function(req, res){
     pg.GetScenes(ContinueScenes);
     function ContinueScenes(queryResults){
       var scenes = queryResults;
@@ -80,6 +80,18 @@ module.exports = function(app){
       res.redirect('/profile');
     }
   });
+
+  function AddCheckSet(req, res, next){
+      pg.AddCheckSet(req.user.id, ContinueAddCheckSet);
+      //res.render('scenes', {scenes: scenes});
+      function ContinueAddCheckSet(userIsSet){
+        if(userIsSet){
+          next();
+        }else{
+          res.redirect('/preferences');
+        }
+      }
+  }
 
   function loggedIn(req, res, next) {
    	if (req.user) {
