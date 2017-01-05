@@ -74,6 +74,13 @@ module.exports = function(app){
     }
  	});
 
+  app.post('/set-preferences', loggedIn, function(req, res){
+    pg.SetPreferences(req.user.id, req.body, ContinueSetPreferences);
+    function ContinueSetPreferences(){
+      res.redirect('/profile');
+    }
+  });
+
   function loggedIn(req, res, next) {
    	if (req.user) {
        	next();

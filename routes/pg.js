@@ -17,6 +17,12 @@ module.exports = function(app){
           client.query('INSERT INTO users (fbid) VALUES ($1)', [id], function(err, result){
             console.log('User added');
           });
+          client.query('INSERT INTO music (fbid) VALUES ($1)', [id], function(err, result){
+            console.log('Music added');
+          });
+          client.query('INSERT INTO lighting (fbid) VALUES ($1)', [id], function(err, result){
+            console.log('Lighting added');
+          });
         }
       });
       callback();
@@ -123,18 +129,25 @@ module.exports = function(app){
   };
   module.exports.LeaveScene = LeaveScene;
 
-  app.post('/set-preferences', loggedIn, function(req, res){
+  var SetPreferences = function SetPreferences(fbid, formResults, callback){
+    var genre = [[formResults.musicCoffeeMorning, formResults.musicCoffeeNoon, formResults.musicCoffeeNight], [formResults.musicBarMorning, formResults.musicBarNoon, formResults.musicBarNight]];
+    var percent = [[formResults.lightingCoffeeMorningPercent,formResults.lightingCoffeeNoonPercent,formResults.lightingCoffeeNightPercent], [formResults.lightingBarMorningPercent,formResults.lightingBarNoonPercent,formResults.lightingBarNightPercent]];
+    var mood = [[formResults.lightingCoffeeMorningMood, formResults.lightingCoffeeNoonMood, formResults.lightingCoffeeNightMood], [formResults.lightingBarMorningMood, formResults.lightingBarNoonMood, formResults.lightingBarNightMood]];
+    // Music table
     pg.connect(connect, function(err, client, done){
-      if(err){
-        return console.error('error fetching', err);
-      }
-      client.query("INSERT INTO public.music(scene_id, coffee_morning) VALUES (1,ARRAY['country', 'rap', 'acoustic'])");
-      client.query("INSERT INTO public.lighting(scene_id, coffee_percent) VALUES (1,ARRAY[70, 90, 40])");
-      done();
-      res.redirect('/');
-    });
-    pg.end();
-  });
+      client.query('UPDATE public.music SET genre=$1 WHERE fbid=$2', [genre, fbid]);
+    }); 
+    // Lighting table
+    pg.connect(connect, function(err, client, done){
+      client.query('UPDATE public.lighting SET percent=$1, mood=$2 WHERE fbid=$3', [percent, mood, fbid]);
+    }); 
+    // Users table
+    pg.connect(connect, function(err, client, done){
+      client.query('UPDATE public.users SET set=TRUE WHERE fbid=$1', [fbid]);
+      callback();
+    }); 
+  };
+  module.exports.SetPreferences = SetPreferences;
 
   function loggedIn(req, res, next) {
     if (req.user) {
