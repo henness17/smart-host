@@ -1,19 +1,13 @@
 <body>
 	<% include partials/head %>
+	
 	<h1><%= general[0].name %></h1>
-	<% if(timeOfDay == 0){ %>
-		<p>Good morning!</p>
-	<% }else if(timeOfDay == 1){ %>
-		<p>Good afternoon!</p>
-	<% }else{ %>
-		<p>Good evening!</p>
-	<% } %>
+	
+	<% include partials/timeGreeting %>
+	
 	<p>At this time of day we play <%= music[0].genre[sceneType][timeOfDay] %> music most of the time.</p>
 	<p>Right now our lighting is usually set to <%= lighting[0].mood[sceneType][timeOfDay] %> at <%= lighting[0].percent[sceneType][timeOfDay] %> percent.</p>
 	<p>There are <%= general[0].usersfbids.length %> people in this scene.</p> 
-	<p>Would you like to become apart of our scene?</p>
-	<form action="/join-scene?id=<%=sceneid%>" method="post">
-    	<button>Join Scene</button>    
-	</form>
-	<!-- We may want to add a 'type' column to scenes, to dynamize which column just like timeOfDay -->
+	
+	<% include partials/join %>
 </body>

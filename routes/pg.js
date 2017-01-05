@@ -29,21 +29,43 @@ module.exports = function(app){
         return console.error('error fetching', err);
       }
       var usersFbids;
+      // Add user to scene's usersfbids
       client.query("SELECT * FROM scenes WHERE sceneid=$1", [sceneid], function(err, result){
         usersFbids = result.rows[0].usersfbids;
-        console.log("PG users: " + usersFbids);
         usersFbids.push(fbid);
         client.query("UPDATE public.scenes SET usersfbids=$2 WHERE sceneid=$1", [sceneid, usersFbids]);
+      });
+      // Add scene to user's inscene
+      client.query("SELECT * FROM public.users WHERE fbid=$1", [fbid], function(err, result){
+        if(result.rows[0].inscene != undefined){
+          // Remove from old scene's usersfbids
+          client.query("SELECT * FROM public.scenes WHERE sceneid=$1", [result.rows[0].inscene], function(err, result2){
+            var usersFbids = result2.rows[0].usersfbids;
+            var indexOfUser = usersFbids.indexOf(fbid);
+            if (indexOfUser > -1) {
+              usersFbids.splice(indexOfUser, 1);
+            }
+            client.query("UPDATE public.scenes SET usersfbids=$1 WHERE sceneid=$2", [usersFbids, result.rows[0].inscene]);
+          });
+        }
+        // Update user's inscene
+        client.query("UPDATE public.users SET inscene=$1 WHERE fbid=$2", [sceneid, fbid]);
         done();
         callback();
       });
-      // User may need a InRoom column that keeps track of what room they're in
-      // When JoinScene is called, the user can be removed from their current room (if any)
-      // This will make for easier lookup when removing the user from the Scenes userFbids column
     });
     pg.end();
   };
   module.exports.JoinScene = JoinScene;
+
+  var LeaveScene = function LeaveScene(fbid, callback){
+    pg.connect(connect, function(err, client, done){
+      client.query('UPDATE public.users SET inscene=null WHERE fbid=$1', [fbid], function(err, result){
+        callback();
+      });
+    }); 
+  };
+  module.exports.LeaveScene = LeaveScene;
 
   var GetUsers = function GetUsers(id){
     pg.connect(connect, function(err, client, done){
@@ -63,9 +85,16 @@ module.exports = function(app){
   };
   module.exports.GetScenes = GetScenes;
 
-  var GetSceneDefaults = function GetSceneDefaults(id, callback){
+  var GetSceneDefaults = function GetSceneDefaults(id, userFbid, callback){
     pg.connect(connect, function(err, client, done){
-      var general, music, lighting;
+      var general, music, lighting, isInScene;
+      client.query('SELECT * FROM users WHERE fbid=$1', [userFbid], function(err, result){
+        if(result.rows[0].inscene == id){
+          isInScene = true;
+        }else{
+          isInScene = false;
+        }
+      });
       client.query('SELECT * FROM scenes WHERE sceneid=$1', [id], function(err, result){
           general = result.rows;
         }); 
@@ -74,7 +103,7 @@ module.exports = function(app){
         });
       client.query('SELECT * FROM lighting WHERE sceneid=$1', [id], function(err, result){
           lighting = result.rows;
-          callback(general, music, lighting);
+          callback(general, music, lighting, isInScene);
         });
       }); 
     };

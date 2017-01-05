@@ -1,0 +1,11 @@
+<% if(isInScene){ %>
+	<p>Are you sure you wanna leave?</p>
+	<form action="/leave-scene" method="post">
+    	<button>Leave Scene</button>    
+	</form>
+<% } else { %>
+	<p>Would you like to become apart of our scene?</p>
+	<form action="/join-scene?id=<%=sceneid%>" method="post">
+    	<button>Join Scene</button>    
+	</form>
+<% } %>
