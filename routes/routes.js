@@ -7,14 +7,14 @@ module.exports = function(app){
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: false}));
 
-	app.get('/', loggedIn, AddCheckSet, function(req, res){
+	app.get('/', loggedIn, CheckPreferencesSet, function(req, res){
     pg.AddCheckRegistration(req.user.id, ContinueIndex);
     function ContinueIndex(){
       res.render('login', {user: req.user});
     }
   });
 
-  app.post('/join-scene', loggedIn, AddCheckSet, function(req, res){
+  app.post('/join-scene', loggedIn, CheckPreferencesSet, function(req, res){
     // If the user requests to join the room, send the fbid and scene id to pg.JoinScene
     pg.JoinScene(req.user.id, req.query.id, ContinueJoinScene);
     function ContinueJoinScene(){
@@ -35,14 +35,14 @@ module.exports = function(app){
   });
 
   app.get('/preferences', loggedIn, function(req, res){
-    res.render('preferences', {user: req.user});
+    res.render('preferences', {user: req.user, set:true});
   });
 
   app.get('/profile', loggedIn, function(req, res){
     res.render('profile', {user: req.user});
   });
 
-  app.get('/scene', loggedIn, function(req, res){
+  app.get('/scene', loggedIn, CheckPreferencesSet, function(req, res){
     // When the scene loads, use id to grab scene default
     pg.GetSceneDefaults(req.query.id, req.user.id, ContinueScene);
     function ContinueScene(general, music, lighting, isInScene){
@@ -66,7 +66,7 @@ module.exports = function(app){
     }
   });
 
-	app.get('/scenes', loggedIn, AddCheckSet, function(req, res){
+	app.get('/scenes', loggedIn, CheckPreferencesSet, function(req, res){
     pg.GetScenes(ContinueScenes);
     function ContinueScenes(queryResults){
       var scenes = queryResults;
@@ -81,14 +81,14 @@ module.exports = function(app){
     }
   });
 
-  function AddCheckSet(req, res, next){
-      pg.AddCheckSet(req.user.id, ContinueAddCheckSet);
+  function CheckPreferencesSet(req, res, next){
+      pg.CheckPreferencesSet(req.user.id, ContinueCheckPreferencesSet);
       //res.render('scenes', {scenes: scenes});
-      function ContinueAddCheckSet(userIsSet){
+      function ContinueCheckPreferencesSet(userIsSet){
         if(userIsSet){
           next();
         }else{
-          res.redirect('/preferences');
+          res.render('preferences', {user: req.user, set:false});
         }
       }
   }

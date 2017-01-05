@@ -30,7 +30,7 @@ module.exports = function(app){
   };
   module.exports.AddCheckRegistration = AddCheckRegistration;
 
-  var AddCheckSet = function AddCheckSet(id, callback){
+  var CheckPreferencesSet = function CheckPreferencesSet(id, callback){
     pg.connect(connect, function(err, client, done){
       client.query('SELECT * FROM users WHERE fbid=$1', [id], function(err, result){
         if(result.rows[0].set == true){
@@ -41,7 +41,7 @@ module.exports = function(app){
       });
     }); 
   };
-  module.exports.AddCheckSet = AddCheckSet;
+  module.exports.CheckPreferencesSet = CheckPreferencesSet;
 
   var GetSceneDefaults = function GetSceneDefaults(id, userFbid, callback){
     pg.connect(connect, function(err, client, done){

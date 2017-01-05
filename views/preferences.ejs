@@ -1,5 +1,10 @@
 <body>
 	<% include partials/head %>
+  <% if(set==false) { %> 
+    <div class="alert alert-danger">
+      <center><strong>Wait!</strong> Let's set your preferences below so that SmartHost can get to know you.</center>
+    </div>
+  <% } %>
 	<center><h1>Preferences</h1><hr>
 	<form method="post" action="/set-preferences">
 		<h3>Music</h3>
