@@ -62,7 +62,7 @@ module.exports = function(app){
       if(general[0].type == "coffee"){
         sceneType = 0;
       }
-      res.render('scene', {req: req, sceneid: req.query.id, sceneType: sceneType, timeOfDay: timeOfDay, general: general, music: music, lighting: lighting, isInScene: isInScene});
+      res.render('scene', {req: req, user: req.user, sceneid: req.query.id, sceneType: sceneType, timeOfDay: timeOfDay, general: general, music: music, lighting: lighting, isInScene: isInScene});
     }
   });
 
@@ -78,7 +78,7 @@ module.exports = function(app){
       b = b.toLowerCase();
       return (a < b) ? -1 : (a > b) ? 1 : 0;
     }
-      res.render('scenes', {scenes: scenes});
+      res.render('scenes', {scenes: scenes, user: req.user});
     }
  	});
 
