@@ -10,7 +10,7 @@ module.exports = function(app){
 	app.get('/', loggedIn, CheckPreferencesSet, function(req, res){
     pg.AddCheckRegistration(req.user.id, ContinueIndex);
     function ContinueIndex(){
-      res.render('login', {user: req.user});
+      res.render('index', {user: req.user});
     }
   });
 
@@ -22,7 +22,7 @@ module.exports = function(app){
     }
   });
 
-  app.post('/leave-scene', function(req, res){
+  app.post('/leave-scene', loggedIn, function(req, res){
     // If the user requests to join the room, send the fbid and scene id to pg.JoinScene
     pg.LeaveScene(req.user.id, ContinueLeaveScene);
     function ContinueLeaveScene(){
@@ -70,6 +70,14 @@ module.exports = function(app){
     pg.GetScenes(ContinueScenes);
     function ContinueScenes(queryResults){
       var scenes = queryResults;
+      console.log(scenes.sort(function(a, b){
+          return compareStrings(a.name, b.name);
+    }));
+    function compareStrings(a, b) {
+      a = a.toLowerCase();
+      b = b.toLowerCase();
+      return (a < b) ? -1 : (a > b) ? 1 : 0;
+    }
       res.render('scenes', {scenes: scenes});
     }
  	});
@@ -79,6 +87,10 @@ module.exports = function(app){
     function ContinueSetPreferences(){
       res.redirect('/profile');
     }
+  });
+
+  app.get('/your-scenes', loggedIn, function(req, res){
+      res.render('yourscenes', {user: req.user});
   });
 
   function CheckPreferencesSet(req, res, next){
