@@ -11,21 +11,33 @@ module.exports = function(app){
     res.render('login', {user: req.user});
   });
 
+  app.post('/join-scene', function(req, res){
+    // If the user requests to join the room, send the fbid and scene id to pg.JoinScene
+    pg.JoinScene(req.user.id, req.query.id, ContinueJoinScene);
+    function ContinueJoinScene(){
+      res.redirect('/scene?id=' + req.query.id);;
+    }
+  });
+
+  app.post('/leave-scene', function(req, res){
+    // If the user requests to join the room, send the fbid and scene id to pg.JoinScene
+    pg.LeaveScene(req.user.id, ContinueLeaveScene);
+    function ContinueLeaveScene(){
+      res.redirect('/scenes');;
+    }
+  });
+
+  app.get('/login', function(req, res){
+    res.render('login', {user: req.user});
+  });
+
+  app.get('/preferences', loggedIn, function(req, res){
+    res.render('preferences', {user: req.user});
+  });
+
   app.get('/profile', loggedIn, function(req, res){
     res.render('profile', {user: req.user});
   });
-
-	app.get('/preferences', loggedIn, function(req, res){
-    res.render('preferences', {user: req.user});
-	});
-
-	app.get('/scenes', loggedIn, function(req, res){
-    pg.GetScenes(ContinueScenes);
-    function ContinueScenes(queryResults){
-      var scenes = queryResults;
-      res.render('scenes', {scenes: scenes});
-    }
- 	});
 
   app.get('/scene', loggedIn, function(req, res){
     // When the scene loads, use id to grab scene default
@@ -50,26 +62,14 @@ module.exports = function(app){
       res.render('scene', {req: req, sceneid: req.query.id, sceneType: sceneType, timeOfDay: timeOfDay, general: general, music: music, lighting: lighting, isInScene: isInScene});
     }
   });
-  
-  app.get('/login', function(req, res){
-    res.render('login', {user: req.user});
-  });
-  
-  app.post('/join-scene', function(req, res){
-    // If the user requests to join the room, send the fbid and scene id to pg.JoinScene
-    pg.JoinScene(req.user.id, req.query.id, ContinueJoinScene);
-    function ContinueJoinScene(){
-      res.redirect('/');;
-    }
-  });
 
-  app.post('/leave-scene', function(req, res){
-    // If the user requests to join the room, send the fbid and scene id to pg.JoinScene
-    pg.LeaveScene(req.user.id, ContinueLeaveScene);
-    function ContinueLeaveScene(){
-      res.redirect('/scenes');;
+	app.get('/scenes', loggedIn, function(req, res){
+    pg.GetScenes(ContinueScenes);
+    function ContinueScenes(queryResults){
+      var scenes = queryResults;
+      res.render('scenes', {scenes: scenes});
     }
-  });
+ 	});
 
   function loggedIn(req, res, next) {
    	if (req.user) {

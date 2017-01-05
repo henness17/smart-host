@@ -1,8 +1,146 @@
 <body>
 	<% include partials/head %>
-	Preferences<br>
-	Are you happy with your preferences?
+	<center><h1>Preferences</h1><hr>
 	<form method="post" action="/set-preferences">
+		<h3>Music</h3>
+			<h4>When at a coffee shop...</h4>
+				In the morning I like to listen to:
+				<select name="music-coffee-morning">
+    				<option value="alternative">Alternative</option>
+    				<option value="country">Country</option>
+    				<option value="electronic">Electronic</option>
+    				<option value="hiphoprap">Hip-Hop/Rap</option>
+    				<option value="rb">R&B</option>
+    				<option value="rock">Rock</option>
+  				</select><br>
+				Around noon I like to listen to:
+				<select name="music-coffee-noon">
+    				<option value="alternative">Alternative</option>
+    				<option value="country">Country</option>
+    				<option value="electronic">Electronic</option>
+    				<option value="hiphoprap">Hip-Hop/Rap</option>
+    				<option value="rb">R&B</option>
+    				<option value="rock">Rock</option>
+  				</select><br>
+				In the evening I like to listen to:
+				<select name="music-coffee-night">
+    				<option value="alternative">Alternative</option>
+    				<option value="country">Country</option>
+    				<option value="electronic">Electronic</option>
+    				<option value="hiphoprap">Hip-Hop/Rap</option>
+    				<option value="rb">R&B</option>
+    				<option value="rock">Rock</option>
+  				</select><br>
+			<h4>When at a bar...</h4>
+				In the morning I like to listen to:
+				<select name="music-bar-morning">
+    				<option value="alternative">Alternative</option>
+    				<option value="country">Country</option>
+    				<option value="electronic">Electronic</option>
+    				<option value="hiphoprap">Hip-Hop/Rap</option>
+    				<option value="rb">R&B</option>
+    				<option value="rock">Rock</option>
+  				</select><br>
+				Around noon I like to listen to:
+				<select name="music-bar-noon">
+    				<option value="alternative">Alternative</option>
+    				<option value="country">Country</option>
+    				<option value="electronic">Electronic</option>
+    				<option value="hiphoprap">Hip-Hop/Rap</option>
+    				<option value="rb">R&B</option>
+    				<option value="rock">Rock</option>
+  				</select><br>
+				In the evening I like to listen to:
+				<select name="music-bar-night">
+    				<option value="alternative">Alternative</option>
+    				<option value="country">Country</option>
+    				<option value="electronic">Electronic</option>
+    				<option value="hiphoprap">Hip-Hop/Rap</option>
+    				<option value="rb">R&B</option>
+    				<option value="rock">Rock</option>
+  				</select><br><hr>
+  		<h3>Lighting</h3>
+  			<h4>When at a coffee shop...</h4>
+  				In the morning I like the lights at a brightness of:
+				<select name="lighting-coffee-morning-percent">
+    				<option value="25">25</option>
+    				<option value="50">50</option>
+    				<option value="75">75</option>
+    				<option value="100">100</option>
+  				</select><br>
+  				Around noon I like the lights at a brightness of:
+				<select name="lighting-coffee-noon-percent">
+    				<option value="25">25</option>
+    				<option value="50">50</option>
+    				<option value="75">75</option>
+    				<option value="100">100</option>
+  				</select><br>
+  				In the evening I like the lights at a brightness of:
+				<select name="lighting-coffee-night-percent">
+    				<option value="25">25</option>
+    				<option value="50">50</option>
+    				<option value="75">75</option>
+    				<option value="100">100</option>
+  				</select><br>
+  				In the morning I like the mood to reflect:
+				<select name="lighting-coffee-morning-mood">
+    				<option value="concentration">Concentration</option>
+    				<option value="productivity">Productivity</option>
+    				<option value="calm">Calm</option>
+  				</select><br>
+  				Around noon I like the mood to reflect:
+				<select name="lighting-coffee-noon-mood">
+    				<option value="concentration">Concentration</option>
+    				<option value="productivity">Productivity</option>
+    				<option value="calm">Calm</option>
+  				</select><br>
+  				In the evening I like the mood to reflect:
+				<select name="lighting-coffee-night-mood">
+    				<option value="concentration">Concentration</option>
+    				<option value="productivity">Productivity</option>
+    				<option value="calm">Calm</option>
+  				</select><br>
+  			<h4>When at a bar...</h4>
+  				In the morning I like the lights at a brightness of:
+				<select name="lighting-bar-morning-percent">
+    				<option value="25">25</option>
+    				<option value="50">50</option>
+    				<option value="75">75</option>
+    				<option value="100">100</option>
+  				</select><br>
+  				Around noon I like the lights at a brightness of:
+				<select name="lighting-bar-noon-percent">
+    				<option value="25">25</option>
+    				<option value="50">50</option>
+    				<option value="75">75</option>
+    				<option value="100">100</option>
+  				</select><br>
+  				In the evening I like the lights at a brightness of:
+				<select name="lighting-bar-night-percent">
+    				<option value="25">25</option>
+    				<option value="50">50</option>
+    				<option value="75">75</option>
+    				<option value="100">100</option>
+  				</select><br>
+  				In the morning I like the mood to reflect:
+				<select name="lighting-bar-morning-mood">
+    				<option value="concentration">Concentration</option>
+    				<option value="productivity">Productivity</option>
+    				<option value="calm">Calm</option>
+  				</select><br>
+  				Around noon I like the mood to reflect:
+				<select name="lighting-bar-noon-mood">
+    				<option value="concentration">Concentration</option>
+    				<option value="productivity">Productivity</option>
+    				<option value="calm">Calm</option>
+  				</select><br>
+  				In the evening I like the mood to reflect:
+				<select name="lighting-bar-night-mood">
+    				<option value="concentration">Concentration</option>
+    				<option value="productivity">Productivity</option>
+    				<option value="calm">Calm</option>
+  				</select><br><br><br>
+  		Are you happy with your preferences?<br>
   		<input type="submit">
 	</form>
 </body>

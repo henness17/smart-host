@@ -10,18 +10,47 @@ module.exports = function(app){
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: false}));
 
-  app.post('/set-preferences', loggedIn, function(req, res){
+  var GetSceneDefaults = function GetSceneDefaults(id, userFbid, callback){
     pg.connect(connect, function(err, client, done){
-      if(err){
-        return console.error('error fetching', err);
-      }
-      client.query("INSERT INTO public.music(scene_id, coffee_morning) VALUES (1,ARRAY['country', 'rap', 'acoustic'])");
-      client.query("INSERT INTO public.lighting(scene_id, coffee_percent) VALUES (1,ARRAY[70, 90, 40])");
-      done();
-      res.redirect('/');
-    });
-    pg.end();
-  });
+      var general, music, lighting, isInScene;
+      client.query('SELECT * FROM users WHERE fbid=$1', [userFbid], function(err, result){
+        if(result.rows[0].inscene == id){
+          isInScene = true;
+        }else{
+          isInScene = false;
+        }
+      });
+      client.query('SELECT * FROM scenes WHERE sceneid=$1', [id], function(err, result){
+          general = result.rows;
+        }); 
+      client.query('SELECT * FROM music WHERE sceneid=$1', [id], function(err, result){
+          music = result.rows;
+        });
+      client.query('SELECT * FROM lighting WHERE sceneid=$1', [id], function(err, result){
+          lighting = result.rows;
+          callback(general, music, lighting, isInScene);
+        });
+      }); 
+    };
+  module.exports.GetSceneDefaults = GetSceneDefaults;
+
+  var GetScenes = function GetScenes(callback){
+    pg.connect(connect, function(err, client, done){
+      client.query('SELECT * FROM scenes', function(err, result){
+        callback(result.rows);
+      });
+    }); 
+  };
+  module.exports.GetScenes = GetScenes;
+
+  var GetUsers = function GetUsers(id){
+    pg.connect(connect, function(err, client, done){
+      client.query('SELECT * FROM users', function(err, result){
+        console.log(result.rows);
+      });
+    }); 
+  };
+  module.exports.GetUsers = GetUsers;
 
   var JoinScene = function JoinScene(fbid, sceneid, callback){
     pg.connect(connect, function(err, client, done){
@@ -80,47 +109,18 @@ module.exports = function(app){
   };
   module.exports.LeaveScene = LeaveScene;
 
-  var GetUsers = function GetUsers(id){
+  app.post('/set-preferences', loggedIn, function(req, res){
     pg.connect(connect, function(err, client, done){
-      client.query('SELECT * FROM users', function(err, result){
-        console.log(result.rows);
-      });
-    }); 
-  };
-  module.exports.GetUsers = GetUsers;
-  
-  var GetScenes = function GetScenes(callback){
-    pg.connect(connect, function(err, client, done){
-      client.query('SELECT * FROM scenes', function(err, result){
-        callback(result.rows);
-      });
-    }); 
-  };
-  module.exports.GetScenes = GetScenes;
-
-  var GetSceneDefaults = function GetSceneDefaults(id, userFbid, callback){
-    pg.connect(connect, function(err, client, done){
-      var general, music, lighting, isInScene;
-      client.query('SELECT * FROM users WHERE fbid=$1', [userFbid], function(err, result){
-        if(result.rows[0].inscene == id){
-          isInScene = true;
-        }else{
-          isInScene = false;
-        }
-      });
-      client.query('SELECT * FROM scenes WHERE sceneid=$1', [id], function(err, result){
-          general = result.rows;
-        }); 
-      client.query('SELECT * FROM music WHERE sceneid=$1', [id], function(err, result){
-          music = result.rows;
-        });
-      client.query('SELECT * FROM lighting WHERE sceneid=$1', [id], function(err, result){
-          lighting = result.rows;
-          callback(general, music, lighting, isInScene);
-        });
-      }); 
-    };
-  module.exports.GetSceneDefaults = GetSceneDefaults;
+      if(err){
+        return console.error('error fetching', err);
+      }
+      client.query("INSERT INTO public.music(scene_id, coffee_morning) VALUES (1,ARRAY['country', 'rap', 'acoustic'])");
+      client.query("INSERT INTO public.lighting(scene_id, coffee_percent) VALUES (1,ARRAY[70, 90, 40])");
+      done();
+      res.redirect('/');
+    });
+    pg.end();
+  });
 
   function loggedIn(req, res, next) {
     if (req.user) {
