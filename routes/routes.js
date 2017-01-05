@@ -14,7 +14,7 @@ module.exports = function(app){
     }
   });
 
-  app.post('/join-scene', loggedIn, function(req, res){
+  app.post('/join-scene', loggedIn, AddCheckSet, function(req, res){
     // If the user requests to join the room, send the fbid and scene id to pg.JoinScene
     pg.JoinScene(req.user.id, req.query.id, ContinueJoinScene);
     function ContinueJoinScene(){
