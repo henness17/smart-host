@@ -8,7 +8,10 @@ module.exports = function(app){
   app.use(bodyParser.urlencoded({ extended: false}));
 
 	app.get('/', loggedIn, function(req, res){
-    res.render('login', {user: req.user});
+    pg.AddCheckRegistration(req.user.id, ContinueIndex);
+    function ContinueIndex(){
+      res.render('login', {user: req.user});
+    }
   });
 
   app.post('/join-scene', function(req, res){

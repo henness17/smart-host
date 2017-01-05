@@ -10,6 +10,20 @@ module.exports = function(app){
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: false}));
 
+  var AddCheckRegistration = function AddCheckRegistration(id, callback){
+    pg.connect(connect, function(err, client, done){
+      client.query('SELECT * FROM users WHERE fbid=$1', [id], function(err, result){
+        if(!(result.rows.length > 0)){
+          client.query('INSERT INTO users (fbid) VALUES ($1)', [id], function(err, result){
+            console.log('User added');
+          });
+        }
+      });
+      callback();
+    }); 
+  };
+  module.exports.AddCheckRegistration = AddCheckRegistration;
+
   var GetSceneDefaults = function GetSceneDefaults(id, userFbid, callback){
     pg.connect(connect, function(err, client, done){
       var general, music, lighting, isInScene;
