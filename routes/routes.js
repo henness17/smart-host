@@ -14,6 +14,10 @@ module.exports = function(app){
     }
   });
 
+  app.get('/something', function(req, res){
+      res.render('something');
+  });
+
   app.post('/join-scene', loggedIn, CheckPreferencesSet, function(req, res){
     // If the user requests to join the room, send the fbid and scene id to pg.JoinScene
     pg.JoinScene(req.user.id, req.query.id, ContinueJoinScene);
@@ -61,8 +65,60 @@ module.exports = function(app){
       var sceneType;
       if(general[0].type == "coffee"){
         sceneType = 0;
+      }else if(general[0].type == "bar"){
+        sceneType = 1;
       }
-      res.render('scene', {req: req, user: req.user, sceneid: req.query.id, sceneType: sceneType, timeOfDay: timeOfDay, general: general, music: music, lighting: lighting, isInScene: isInScene});
+      //var lightingData = [["Hello", "There"],["",10],["Light", 90]];
+      //var musicData = [["Hello", "There"],["Rock",40],["Rap", 60]];
+      // Construct data from users that are in the scene
+      pg.GetSceneData(req.query.id, sceneType, timeOfDay, ManageAndReturnData);
+      function ManageAndReturnData(lightingData, musicData){
+        // Okay now we've got our shit populate [alternative, rock, etc..], [25, 60, etc..]
+        console.log("MARD Starts Lighting: " + lightingData);
+        console.log("MARD Starts Music: " + musicData);
+        var lightingDataReturn = ManageLightingArray(lightingData);
+        var musicDataReturn = ManageMusicArray(musicData, renderScene);
+        
+        function ManageMusicArray(array, callback) {
+            console.log("MANAGE MUSIC ARRAY");
+            var order = ["Hello"], count = ["There"], prev, returnArray = [];
+            array.sort();
+            for ( var i = 0; i < array.length; i++ ) {
+                if ( array[i] !== prev ) {
+                    order.push(array[i]);
+                    count.push(1);
+                } else {
+                    count[count.length-1]++;
+                }
+                prev = array[i];
+            }
+            for(var i = 0; i < order.length; i++){
+              returnArray.push([order[i], count[i]])
+            }
+            callback(returnArray);
+            console.log("LEAVING MANAGE MUSIC ARRAY");
+        }
+        function ManageLightingArray(array){
+          console.log("MANAGE LIGHTING ARRAY");
+          var avg = 0;
+          for(var i = 0; i < array.length; i++){
+            avg = avg + array[i];
+          }
+          avg/=array.length;
+          var returnArray = [["Hello", "There"],["",100-avg],["Light",avg]];
+          console.log("LEAVING MANAGE LIGHTING ARRAY");
+          return returnArray;
+        }
+
+        function renderScene(musicDataFromCallback){
+          console.log("RENDER SCENE");
+          console.log(musicDataFromCallback);
+          console.log(lightingDataReturn)
+          res.render('scene', {req: req, user: req.user, sceneid: req.query.id, sceneType: sceneType, 
+            timeOfDay: timeOfDay, general: general, music: music, lighting: lighting, isInScene: isInScene, lightingData: lightingDataReturn,
+            musicData: musicDataFromCallback});
+        }
+      }
     }
   });
 

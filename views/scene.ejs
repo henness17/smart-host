@@ -1,13 +1,62 @@
-<body>
+ <body>
+ 	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 	<% include partials/head %>
 	
 	<h1><%= general[0].name %></h1>
-	
+
 	<% include partials/timeGreeting %>
-	
+
+	<div id="music" style="width: 450px; height: 250px;"></div>
+
+	<div id="light" style="width: 450px; height: 250px;"></div>
+
 	<p>At this time of day we play <%= music[0].genre[sceneType][timeOfDay] %> music most of the time.</p>
 	<p>Right now our lighting is usually set to <%= lighting[0].mood[sceneType][timeOfDay] %> at <%= lighting[0].percent[sceneType][timeOfDay] %> percent.</p>
 	<p>There are <%= general[0].usersfbids.length %> people in this scene.</p> 
 	
 	<% include partials/join %>
 </body>
+<script>
+google.charts.load('current', {
+        'packages': ['corechart']
+      });
+google.charts.setOnLoadCallback(drawMusicChart);
+google.charts.setOnLoadCallback(drawLightChart);
+function drawMusicChart() {
+  var dataArray = [];
+  <%for(var i = 0; i < musicData.length; i++){
+  	if(i == 0){%>
+  	  dataArray.push(["<%=musicData[i][0]%>", "<%=musicData[i][1]%>"]);
+  	<%}else{%>
+  	  dataArray.push(["<%=musicData[i][0]%>", <%=musicData[i][1]%>]);
+  	<%}%>
+  <%}%>
+  var title = "Music";
+  var data = google.visualization.arrayToDataTable(dataArray);
+  var options = {
+    title: title,
+    pieHole: 0.9
+  };
+  var chart = new google.visualization.PieChart(document.getElementById("music"));
+    chart.draw(data, options);
+}
+function drawLightChart() {
+  var dataArray = [];
+  <%for(var i = 0; i < lightingData.length; i++){
+  	if(i == 0){%>
+  	  dataArray.push(["<%=lightingData[i][0]%>", "<%=lightingData[i][1]%>"]);
+  	<%}else{%>
+  	  dataArray.push(["<%=lightingData[i][0]%>", <%=lightingData[i][1]%>]);
+  	<%}%>
+  <%}%>
+  var title = "Light";
+  var data = google.visualization.arrayToDataTable(dataArray);
+  var options = {
+    title: title,
+    pieHole: 0.9,
+    colors: ['#ffffff', '#ffd700']
+  };
+  var chart = new google.visualization.PieChart(document.getElementById("light"));
+    chart.draw(data, options);
+}
+</script>

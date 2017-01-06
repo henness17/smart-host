@@ -43,6 +43,39 @@ module.exports = function(app){
   };
   module.exports.CheckPreferencesSet = CheckPreferencesSet;
 
+  var GetSceneData = function GetSceneData(id, sceneType, timeOfDay, callback){
+    pg.connect(connect, function(err, client, done){
+      console.log("CONNECTING TO PG");
+      var lightingData = [];
+      var musicData = [];
+      var usersFbids;
+      var forEachCounter = 0;
+      console.log("GETTING PG DATA");
+      client.query('SELECT * FROM scenes WHERE sceneid=$1', [id], function(err, result){
+        usersFbids = result.rows[0].usersfbids;
+        console.log("Fbids length:" + usersFbids.length);
+        usersFbids.forEach(function(fbid) {
+          client.query('SELECT * FROM music WHERE fbid=$1', [fbid], function(err, result2){
+            musicData.push(result2.rows[0].genre[sceneType][timeOfDay]);
+            console.log("Music Data: " + musicData);
+            client.query('SELECT * FROM lighting WHERE fbid=$1', [fbid], function(err, result3){
+              lightingData.push(result3.rows[0].percent[sceneType][timeOfDay]);
+              console.log("Music Data: " + lightingData);
+              // Sometimes this function runs..
+              forEachCounter++;
+              if(forEachCounter == usersFbids.length){
+                console.log("END: " + lightingData);
+                console.log("END: " + musicData);
+                callback(lightingData, musicData); 
+              }
+            }); 
+          }); 
+        });
+      });
+    });
+  }
+  module.exports.GetSceneData = GetSceneData;
+
   var GetSceneDefaults = function GetSceneDefaults(id, userFbid, callback){
     pg.connect(connect, function(err, client, done){
       var general, music, lighting, isInScene;
