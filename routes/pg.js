@@ -25,6 +25,7 @@ module.exports = function(app){
           });
         }
       });
+      done();
       callback();
     }); 
   };
@@ -34,8 +35,10 @@ module.exports = function(app){
     pg.connect(connect, function(err, client, done){
       client.query('SELECT * FROM users WHERE fbid=$1', [id], function(err, result){
         if(result.rows[0].set == true){
+          done();
           callback(true);
         }else{
+          done();
           callback(false);
         }
       });
@@ -66,6 +69,7 @@ module.exports = function(app){
               if(forEachCounter == usersFbids.length){
                 console.log("END: " + lightingData);
                 console.log("END: " + musicData);
+                done();
                 callback(lightingData, musicData); 
               }
             }); 
@@ -94,6 +98,7 @@ module.exports = function(app){
         });
       client.query('SELECT * FROM lighting WHERE sceneid=$1', [id], function(err, result){
           lighting = result.rows;
+          done();
           callback(general, music, lighting, isInScene);
         });
       }); 
@@ -103,6 +108,7 @@ module.exports = function(app){
   var GetScenes = function GetScenes(callback){
     pg.connect(connect, function(err, client, done){
       client.query('SELECT * FROM scenes', function(err, result){
+        done();
         callback(result.rows);
       });
     }); 
@@ -112,6 +118,7 @@ module.exports = function(app){
   var GetUsers = function GetUsers(id){
     pg.connect(connect, function(err, client, done){
       client.query('SELECT * FROM users', function(err, result){
+        done();
         console.log(result.rows);
       });
     }); 
@@ -169,6 +176,7 @@ module.exports = function(app){
         }
       });
       client.query('UPDATE public.users SET inscene=null WHERE fbid=$1', [fbid], function(err, result){
+        done();
         callback();
       });
     }); 
@@ -182,14 +190,9 @@ module.exports = function(app){
     // Music table
     pg.connect(connect, function(err, client, done){
       client.query('UPDATE public.music SET genre=$1 WHERE fbid=$2', [genre, fbid]);
-    }); 
-    // Lighting table
-    pg.connect(connect, function(err, client, done){
       client.query('UPDATE public.lighting SET percent=$1, mood=$2 WHERE fbid=$3', [percent, mood, fbid]);
-    }); 
-    // Users table
-    pg.connect(connect, function(err, client, done){
       client.query('UPDATE public.users SET set=TRUE WHERE fbid=$1', [fbid]);
+      done();
       callback();
     }); 
   };
