@@ -7,15 +7,11 @@ module.exports = function(app){
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: false}));
 
-	app.get('/', loggedIn, CheckPreferencesSet, function(req, res){
+	app.get('/', loggedIn, function(req, res){
     pg.AddCheckRegistration(req.user.id, ContinueIndex);
     function ContinueIndex(){
       res.render('index', {user: req.user});
     }
-  });
-
-  app.get('/something', function(req, res){
-      res.render('something');
   });
 
   app.post('/join-scene', loggedIn, CheckPreferencesSet, function(req, res){

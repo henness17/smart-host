@@ -12,21 +12,30 @@ module.exports = function(app){
 
   var AddCheckRegistration = function AddCheckRegistration(id, callback){
     pg.connect(connect, function(err, client, done){
+      var queryCount = 0;
       client.query('SELECT * FROM users WHERE fbid=$1', [id], function(err, result){
         if(!(result.rows.length > 0)){
           client.query('INSERT INTO users (fbid) VALUES ($1)', [id], function(err, result){
             console.log('User added');
+            Finish();
           });
           client.query('INSERT INTO music (fbid) VALUES ($1)', [id], function(err, result){
             console.log('Music added');
+            Finish();
           });
           client.query('INSERT INTO lighting (fbid) VALUES ($1)', [id], function(err, result){
             console.log('Lighting added');
+            Finish();
           });
         }
       });
-      done();
-      callback();
+      function Finish(){
+        queryCount++;
+        if(queryCount == 3){
+          done();
+          callback();
+        }
+      }
     }); 
   };
   module.exports.AddCheckRegistration = AddCheckRegistration;
@@ -83,6 +92,7 @@ module.exports = function(app){
   var GetSceneDefaults = function GetSceneDefaults(id, userFbid, callback){
     pg.connect(connect, function(err, client, done){
       var general, music, lighting, isInScene;
+      var queryCount = 0;
       client.query('SELECT * FROM users WHERE fbid=$1', [userFbid], function(err, result){
         if(result.rows[0].inscene == id){
           isInScene = true;
@@ -92,15 +102,23 @@ module.exports = function(app){
       });
       client.query('SELECT * FROM scenes WHERE sceneid=$1', [id], function(err, result){
           general = result.rows;
+          Finish();
         }); 
       client.query('SELECT * FROM music WHERE sceneid=$1', [id], function(err, result){
           music = result.rows;
+          Finish();
         });
       client.query('SELECT * FROM lighting WHERE sceneid=$1', [id], function(err, result){
           lighting = result.rows;
+          Finish();
+        });
+      function Finish(){
+        queryCount++;
+        if(queryCount == 3){
           done();
           callback(general, music, lighting, isInScene);
-        });
+        }
+      }
       }); 
     };
   module.exports.GetSceneDefaults = GetSceneDefaults;
@@ -131,6 +149,7 @@ module.exports = function(app){
         return console.error('error fetching', err);
       }
       var usersFbids;
+      var queryCount = 0;
       // Add user to scene's usersfbids
       client.query("SELECT * FROM scenes WHERE sceneid=$1", [sceneid], function(err, result){
         usersFbids = result.rows[0].usersfbids;
@@ -139,6 +158,7 @@ module.exports = function(app){
       });
       // Add scene to user's inscene
       client.query("SELECT * FROM public.users WHERE fbid=$1", [fbid], function(err, result){
+        Finish();
         if(result.rows[0].inscene != undefined){
           // Remove from old scene's usersfbids
           client.query("SELECT * FROM public.scenes WHERE sceneid=$1", [result.rows[0].inscene], function(err, result2){
@@ -147,13 +167,22 @@ module.exports = function(app){
             if (indexOfUser > -1) {
               usersFbids.splice(indexOfUser, 1);
             }
-            client.query("UPDATE public.scenes SET usersfbids=$1 WHERE sceneid=$2", [usersFbids, result.rows[0].inscene]);
+            client.query("UPDATE public.scenes SET usersfbids=$1 WHERE sceneid=$2", [usersFbids, result.rows[0].inscene], function(err, result){
+              Finish();  
+            });
           });
         }
         // Update user's inscene
-        client.query("UPDATE public.users SET inscene=$1 WHERE fbid=$2", [sceneid, fbid]);
-        done();
-        callback();
+        client.query("UPDATE public.users SET inscene=$1 WHERE fbid=$2", [sceneid, fbid], function(err, result){
+            Finish();
+        });
+        function Finish(){
+          queryCount++;
+          if(queryCount == 2){
+            done();
+            callback();
+          }
+        }
       });
     });
     pg.end();
@@ -187,13 +216,25 @@ module.exports = function(app){
     var genre = [[formResults.musicCoffeeMorning, formResults.musicCoffeeNoon, formResults.musicCoffeeNight], [formResults.musicBarMorning, formResults.musicBarNoon, formResults.musicBarNight]];
     var percent = [[formResults.lightingCoffeeMorningPercent,formResults.lightingCoffeeNoonPercent,formResults.lightingCoffeeNightPercent], [formResults.lightingBarMorningPercent,formResults.lightingBarNoonPercent,formResults.lightingBarNightPercent]];
     var mood = [[formResults.lightingCoffeeMorningMood, formResults.lightingCoffeeNoonMood, formResults.lightingCoffeeNightMood], [formResults.lightingBarMorningMood, formResults.lightingBarNoonMood, formResults.lightingBarNightMood]];
+    var queryCount = 0;
     // Music table
     pg.connect(connect, function(err, client, done){
-      client.query('UPDATE public.music SET genre=$1 WHERE fbid=$2', [genre, fbid]);
-      client.query('UPDATE public.lighting SET percent=$1, mood=$2 WHERE fbid=$3', [percent, mood, fbid]);
-      client.query('UPDATE public.users SET set=TRUE WHERE fbid=$1', [fbid]);
-      done();
-      callback();
+      client.query('UPDATE public.music SET genre=$1 WHERE fbid=$2', [genre, fbid], function(err, result){
+        Finish();
+      });
+      client.query('UPDATE public.lighting SET percent=$1, mood=$2 WHERE fbid=$3', [percent, mood, fbid], function(err, result){
+        Finish();
+      });
+      client.query('UPDATE public.users SET set=TRUE WHERE fbid=$1', [fbid], function(){
+        Finish();
+      });
+      function Finish(){
+        queryCount++;
+        if(queryCount == 3){
+          done();
+          callback();
+        }
+      }
     }); 
   };
   module.exports.SetPreferences = SetPreferences;
