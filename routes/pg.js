@@ -27,9 +27,13 @@ module.exports = function(app){
             console.log('Lighting added');
             Finish();
           });
+        }else{
+          Finish();
+          Finish();
+          Finish();
         }
       });
-      function Finish(){
+      function Finish(){ 
         queryCount++;
         if(queryCount == 3){
           done();
@@ -155,10 +159,11 @@ module.exports = function(app){
         usersFbids = result.rows[0].usersfbids;
         usersFbids.push(fbid);
         client.query("UPDATE public.scenes SET usersfbids=$2 WHERE sceneid=$1", [sceneid, usersFbids]);
+        Finish();
       });
       // Add scene to user's inscene
       client.query("SELECT * FROM public.users WHERE fbid=$1", [fbid], function(err, result){
-        Finish();
+        var queryCount = 0;
         if(result.rows[0].inscene != undefined){
           // Remove from old scene's usersfbids
           client.query("SELECT * FROM public.scenes WHERE sceneid=$1", [result.rows[0].inscene], function(err, result2){
@@ -167,23 +172,25 @@ module.exports = function(app){
             if (indexOfUser > -1) {
               usersFbids.splice(indexOfUser, 1);
             }
-            client.query("UPDATE public.scenes SET usersfbids=$1 WHERE sceneid=$2", [usersFbids, result.rows[0].inscene], function(err, result){
+            client.query("UPDATE public.scenes SET usersfbids=$1 WHERE sceneid=$2", [usersFbids, result.rows[0].inscene], function(err, result3){
               Finish();  
             });
           });
+        }else{
+          Finish();
         }
         // Update user's inscene
         client.query("UPDATE public.users SET inscene=$1 WHERE fbid=$2", [sceneid, fbid], function(err, result){
-            Finish();
+          Finish();
         });
-        function Finish(){
-          queryCount++;
-          if(queryCount == 2){
-            done();
-            callback();
-          }
-        }
       });
+      function Finish(){
+        queryCount++;
+        if(queryCount == 3){
+          done();
+          callback();
+        }
+      }
     });
     pg.end();
   };
@@ -191,6 +198,7 @@ module.exports = function(app){
 
   var LeaveScene = function LeaveScene(fbid, callback){
     pg.connect(connect, function(err, client, done){
+      var queryCount = 0;
       client.query("SELECT * FROM public.users WHERE fbid=$1", [fbid], function(err, result){
         if(result.rows[0].inscene != undefined){
           // Remove from old scene's usersfbids
@@ -200,14 +208,24 @@ module.exports = function(app){
             if (indexOfUser > -1) {
               usersFbids.splice(indexOfUser, 1);
             }
-            client.query("UPDATE public.scenes SET usersfbids=$1 WHERE sceneid=$2", [usersFbids, result.rows[0].inscene]);
+            client.query("UPDATE public.scenes SET usersfbids=$1 WHERE sceneid=$2", [usersFbids, result.rows[0].inscene], function(err, result3){
+              Finish();
+            });
           });
+        }else{
+          Finish();
         }
       });
       client.query('UPDATE public.users SET inscene=null WHERE fbid=$1', [fbid], function(err, result){
-        done();
-        callback();
+        Finish();
       });
+      function Finish(){
+        queryCount++;
+        if(queryCount == 2){
+          done();
+          callback();
+        }
+      }
     }); 
   };
   module.exports.LeaveScene = LeaveScene;
