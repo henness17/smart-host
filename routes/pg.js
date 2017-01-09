@@ -59,6 +59,26 @@ module.exports = function(app){
   };
   module.exports.CheckPreferencesSet = CheckPreferencesSet;
 
+  var CreateScene = function CreateScene(fbid, sceneName, callback){
+    pg.connect(connect, function(err, client, done){
+      client.query('INSERT INTO scenes (ownerfbid, name) VALUES ($1, $2)', [fbid, sceneName], function(err, result){
+        done();
+        callback();
+      });
+    }); 
+  };
+  module.exports.CreateScene = CreateScene;
+
+  var GetScenesById = function GetSceneById(fbid, callback){
+    pg.connect(connect, function(err, client, done){
+      client.query('SELECT * FROM scenes WHERE ownerfbid=$1 ', [fbid], function(err, result){
+        done();
+        callback(result.rows);
+      });
+    }); 
+  };
+  module.exports.GetScenesById = GetScenesById;
+
   var GetSceneData = function GetSceneData(id, sceneType, timeOfDay, callback){
     pg.connect(connect, function(err, client, done){
       console.log("CONNECTING TO PG");

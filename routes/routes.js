@@ -14,6 +14,14 @@ module.exports = function(app){
     }
   });
 
+  app.post('/create-scene', loggedIn, function(req, res){
+    // If the user requests to join the room, send the fbid and scene id to pg.JoinScene
+    pg.CreateScene(req.user.id, req.body.scenename, ContinueCreateScene);
+    function ContinueCreateScene(){
+      res.redirect('/your-scenes');;
+    }
+  });
+
   app.get('/admin-panel', loggedIn, function(req, res){
     if(req.user.id == '1312588832117318'){
       res.render('adminpanel', {user: req.user});
@@ -149,10 +157,6 @@ module.exports = function(app){
     }
   });
 
-  app.get('/your-scenes', loggedIn, function(req, res){
-      res.render('yourscenes', {user: req.user});
-  });
-
   function CheckPreferencesSet(req, res, next){
       pg.CheckPreferencesSet(req.user.id, ContinueCheckPreferencesSet);
       //res.render('scenes', {scenes: scenes});
@@ -165,6 +169,13 @@ module.exports = function(app){
       }
   }
 
+  app.get('/your-scenes', loggedIn, function(req, res){
+    pg.GetScenesById(req.user.id, ContinueYourScenes);
+    function ContinueYourScenes(yourscenes){
+      res.render('yourscenes', {user: req.user, yourscenes: yourscenes});
+    }
+  });
+
   function loggedIn(req, res, next) {
    	if (req.user) {
        	next();
@@ -173,7 +184,9 @@ module.exports = function(app){
    	}
 	}
 
+  /////////////////
   // Admin Panel
+  /////////////////
   app.post('/admin-create-user', loggedIn, function(req, res){
     // If the user requests to join the room, send the fbid and scene id to pg.JoinScene
     pg.AddCheckRegistration(req.body.id, ContinueCreateUser);
