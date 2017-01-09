@@ -1,0 +1,184 @@
+<% include partials/head %>
+<body>
+<h1>ADMIN PANEL</h1>
+<button onclick="myFunction()">Toggle Preferences</button>
+<form action="admin-create-user" method="post">
+  <b>Create User</b> - <br>
+  ID:<br>
+  
+  <input type="text" name="id"><br>
+  <div id="myDIV">
+    <h3>Music</h3>
+      <h4>When at a coffee shop...</h4>
+        In the morning I like to listen to:
+        <select name="musicCoffeeMorning">
+            <option value="alternative">Alternative</option>
+            <option value="country">Country</option>
+            <option value="electronic">Electronic</option>
+            <option value="hiphoprap">Hip-Hop/Rap</option>
+            <option value="rb">R&B</option>
+            <option value="rock">Rock</option>
+        </select><br>
+        Around noon I like to listen to:
+        <select name="musicCoffeeNoon">
+            <option value="alternative">Alternative</option>
+            <option value="country">Country</option>
+            <option value="electronic">Electronic</option>
+            <option value="hiphoprap">Hip-Hop/Rap</option>
+            <option value="rb">R&B</option>
+            <option value="rock">Rock</option>
+        </select><br>
+        In the evening I like to listen to:
+        <select name="musicCoffeeNight">
+            <option value="alternative">Alternative</option>
+            <option value="country">Country</option>
+            <option value="electronic">Electronic</option>
+            <option value="hiphoprap">Hip-Hop/Rap</option>
+            <option value="rb">R&B</option>
+            <option value="rock">Rock</option>
+        </select><br>
+      <h4>When at a bar...</h4>
+        In the morning I like to listen to:
+        <select name="musicBarMorning">
+            <option value="alternative">Alternative</option>
+            <option value="country">Country</option>
+            <option value="electronic">Electronic</option>
+            <option value="hiphoprap">Hip-Hop/Rap</option>
+            <option value="rb">R&B</option>
+            <option value="rock">Rock</option>
+        </select><br>
+        Around noon I like to listen to:
+        <select name="musicBarNoon">
+            <option value="alternative">Alternative</option>
+            <option value="country">Country</option>
+            <option value="electronic">Electronic</option>
+            <option value="hiphoprap">Hip-Hop/Rap</option>
+            <option value="rb">R&B</option>
+            <option value="rock">Rock</option>
+        </select><br>
+        In the evening I like to listen to:
+        <select name="musicBarNight">
+            <option value="alternative">Alternative</option>
+            <option value="country">Country</option>
+            <option value="electronic">Electronic</option>
+            <option value="hiphoprap">Hip-Hop/Rap</option>
+            <option value="rb">R&B</option>
+            <option value="rock">Rock</option>
+        </select><br>
+      <h3>Lighting</h3>
+        <h4>When at a coffee shop...</h4>
+          In the morning I like the lights at a brightness of:
+        <select name="lightingCoffeeMorningPercent">
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="75">75</option>
+            <option value="100">100</option>
+        </select><br>
+        Around noon I like the lights at a brightness of:
+        <select name="lightingCoffeeNoonPercent">
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="75">75</option>
+            <option value="100">100</option>
+        </select><br>
+        In the evening I like the lights at a brightness of:
+        <select name="lightingCoffeeNightPercent">
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="75">75</option>
+            <option value="100">100</option>
+        </select><br>
+        In the morning I like the mood to reflect:
+        <select name="lightingCoffeeMorningMood">
+            <option value="concentration">Concentration</option>
+            <option value="productivity">Productivity</option>
+            <option value="calm">Calm</option>
+        </select><br>
+        Around noon I like the mood to reflect:
+        <select name="lightingCoffeeNoonMood">
+            <option value="concentration">Concentration</option>
+            <option value="productivity">Productivity</option>
+            <option value="calm">Calm</option>
+        </select><br>
+        In the evening I like the mood to reflect:
+        <select name="lightingCoffeeNightMood">
+            <option value="concentration">Concentration</option>
+            <option value="productivity">Productivity</option>
+            <option value="calm">Calm</option>
+        </select><br>
+        <h4>When at a bar...</h4>
+        In the morning I like the lights at a brightness of:
+        <select name="lightingBarMorningPercent">
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="75">75</option>
+            <option value="100">100</option>
+        </select><br>
+        Around noon I like the lights at a brightness of:
+        <select name="lightingBarNoonPercent">
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="75">75</option>
+            <option value="100">100</option>
+        </select><br>
+        In the evening I like the lights at a brightness of:
+        <select name="lightingBarNightPercent">
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="75">75</option>
+            <option value="100">100</option>
+        </select><br>
+        In the morning I like the mood to reflect:
+        <select name="lightingBarMorningMood">
+            <option value="concentration">Concentration</option>
+            <option value="productivity">Productivity</option>
+            <option value="calm">Calm</option>
+        </select><br>
+        Around noon I like the mood to reflect:
+        <select name="lightingBarNoonMood">
+            <option value="concentration">Concentration</option>
+            <option value="productivity">Productivity</option>
+            <option value="calm">Calm</option>
+        </select><br>
+        In the evening I like the mood to reflect:
+        <select name="lightingBarNightMood">
+            <option value="concentration">Concentration</option>
+            <option value="productivity">Productivity</option>
+            <option value="calm">Calm</option>
+        </select><br>
+      </div>
+  <button type="submit">Submit</button>
+</form>
+
+<br><br>
+
+<form action="admin-add-user-to-scene" method="post">
+  <b>Add User To Scene</b> - <br>   
+  User ID:
+  <input type="text" name="id"><br>
+  Scene ID:
+  <input type="text" name="sceneid"><br>
+  <button type="submit">Submit</button>
+</form>
+
+<br><br>
+
+<form action="admin-remove-user-from-scene" method="post">
+  <b>Remove User From Scene</b> - <br>   
+  User ID:
+  <input type="text" name="id"><br>
+  <button type="submit">Submit</button>
+</form>
+</body>
+
+<script>
+function myFunction() {
+    var x = document.getElementById('myDIV');
+    if (x.style.display === 'none') {
+        x.style.display = 'block';
+    } else {
+        x.style.display = 'none';
+    }
+}
+window.onload = myFunction();
+</script>

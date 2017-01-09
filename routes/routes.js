@@ -14,6 +14,14 @@ module.exports = function(app){
     }
   });
 
+  app.get('/admin-panel', loggedIn, function(req, res){
+    if(req.user.id == '1312588832117318'){
+      res.render('adminpanel', {user: req.user});
+    }else{
+      res.render('index', {user: req.user});
+    }
+  });
+
   app.post('/join-scene', loggedIn, CheckPreferencesSet, function(req, res){
     // If the user requests to join the room, send the fbid and scene id to pg.JoinScene
     pg.JoinScene(req.user.id, req.query.id, ContinueJoinScene);
@@ -164,4 +172,32 @@ module.exports = function(app){
        	res.redirect('/login');
    	}
 	}
+
+  // Admin Panel
+  app.post('/admin-create-user', loggedIn, function(req, res){
+    // If the user requests to join the room, send the fbid and scene id to pg.JoinScene
+    pg.AddCheckRegistration(req.body.id, ContinueCreateUser);
+    function ContinueCreateUser(){
+      pg.SetPreferences(req.body.id, req.body, ContinueSetPreferences);
+        function ContinueSetPreferences(){
+        res.redirect('/admin-panel');
+      }
+    }
+  });
+  app.post('/admin-add-user-to-scene', loggedIn, function(req, res){
+    // If the user requests to join the room, send the fbid and scene id to pg.JoinScene
+    pg.JoinScene(req.body.id, req.body.sceneid, ContinueAddUserToScene);
+    function ContinueAddUserToScene(){
+      res.redirect('/admin-panel');
+    }
+  });
+  app.post('/admin-remove-user-from-scene', loggedIn, function(req, res){
+    // If the user requests to join the room, send the fbid and scene id to pg.JoinScene
+    pg.LeaveScene(req.body.id, ContinueAddUserToScene);
+    function ContinueAddUserToScene(){
+      res.redirect('/admin-panel');
+    }
+  });
 };  
+
+
